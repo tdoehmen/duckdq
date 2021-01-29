@@ -1,6 +1,6 @@
-hypothesis==5.43.4
-pandas==1.1.5
-duckdb==0.2.3
-pytest==6.2.1
-pytest-cov==2.10.1
-tryingsnake==0.5.1
+hypothesis
+pandas
+duckdb
+pytest
+pytest-cov
+tryingsnake
