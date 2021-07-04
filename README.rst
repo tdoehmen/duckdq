@@ -21,6 +21,15 @@ DuckDQ is a python library that provides a fluent API for the definition and exe
 The design of DuckDQ is inspired by Deequ and combines it with the power of the embeddable analytical database management system DuckDB.
 It excels on small-to medium-sized datasets.
 
+Installation
+===========
+.. code-block::
+
+   git clone https://github.com/tdoehmen/duckdq 
+   cd duckdq 
+   python setup.py install 
+   
+
 Acknowledgements
 ==================
 

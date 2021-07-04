@@ -176,7 +176,7 @@ class SQLEngine(Engine):
 
     def execute_and_store(self, query: str, table: str, temp: bool = False) -> str:
         self.con.execute(f"DROP TABLE IF EXISTS {table}")
-        self.con.execute(f"CREATE {'TEMP ' if temp else ''}TABLE {table} AS {query}")
+        self.con.execute(f"CREATE {'TEMPORARY ' if temp else ''}TABLE {table} AS {query}")
         return table
 
     @abstractmethod
