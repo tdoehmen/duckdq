@@ -327,14 +327,14 @@ class MaximumOperator(ScanShareableOperator):
 
 class MeanOperator(ScanShareableOperator):
     def __init__(self, property: Mean):
-        self.count_column = f"count{property.filter_identifier()}"
+        self.count_column = f"count{property.property_identifier()}"
         self.total_column = f"total{property.property_identifier()}"
 
         if property.where is None:
-            aggregations = [f"COUNT(*) as {self.count_column}",
+            aggregations = [f"COUNT({property.column}) as {self.count_column}",
                             f"SUM({property.column}) as {self.total_column}"]
         else:
-            aggregations = [f"SUM(CASE WHEN ({property.where}) THEN 1 ELSE 0 END) as {self.count_column}",
+            aggregations = [f"SUM(CASE WHEN ({property.where}) AND {property.column} IS NOT NULL THEN 1 ELSE 0 END) as {self.count_column}",
                             f"SUM(CASE WHEN ({property.where}) THEN {property.column} ELSE NULL END) as {self.total_column}"]
 
         super().__init__(property, aggregations)
@@ -403,7 +403,6 @@ class StandardDeviationOperator(ScanShareableOperator):
 
 class QuantileOperator(ScanShareableOperator):
     pass
-
 
 class HistogramPropertyOperator(SQLOperator):
     pass

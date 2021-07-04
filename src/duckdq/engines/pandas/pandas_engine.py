@@ -23,7 +23,7 @@ from duckdq.utils.metrics_helper import metric_from_value
 
 
 class PandasEngine(Engine):
-    def __init__(self, data: DataFrame):
+    def __init__(self, data: DataFrame, no_sharing = False):
         super().__init__()
         con = ConnectionHandler.get_connection("duckdb://:memory:")
 
@@ -33,7 +33,7 @@ class PandasEngine(Engine):
         # register df
         con.register("data", data)
 
-        self.engine = DuckDBEngine(con, "data")
+        self.engine = DuckDBEngine(con, "data", no_sharing=no_sharing)
         self.data = data
         self.table = "data"
 

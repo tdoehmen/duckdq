@@ -161,6 +161,10 @@ class VerificationSuite:
         engine = PandasEngine(data)
         return VerificationRunBuilder(engine, dataset_id, partition_id)
 
+    def on_data_no_sharing(self, data: DataFrame, dataset_id: str = None, partition_id: str = None):
+        engine = PandasEngine(data,no_sharing=True)
+        return VerificationRunBuilder(engine, dataset_id, partition_id)
+
     def on_table(self, url_or_con, table: str, dataset_id: str = None, partition_id: str = None):
         engine = SQLEngineFactory.create_sql_engine(url_or_con, table)
         return VerificationRunBuilder(engine, dataset_id, partition_id)

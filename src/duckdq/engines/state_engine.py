@@ -2,6 +2,7 @@ import importlib
 import json
 
 import duckdb
+import math
 import dill
 from typing import Dict, Sequence, List
 
@@ -123,21 +124,23 @@ class StateEngine:
             serialized_hll = main_hll.serialize_updatable().hex()
             result_state = ApproxDistinctState(first_state.id, serialized_hll, approx_distinct_count, num_rows)
         elif isinstance(first_state,StandardDeviationState):
-            n: float = first_state.n
-            avg: float = first_state.avg
-            m2: float = first_state.m2
+            target_n: float = first_state.n
+            target_avg: float = first_state.avg
+            target_m2: float = first_state.m2
             stddev: float = first_state.stddev
             i = 0
             for state in states:
                 if i == 0:
                     i += 1
                     continue
-                n = n + state.n;
-                avg = (state.n * state.avg + n * avg) / n
-                delta = state.avg - avg
-                m2 = state.m2 + m2 + delta * delta * state.n * n / n
-                stddev = (m2 / (n - 1)) if n > 1 else 0
-            result_state = StandardDeviationState(first_state.id, n, avg, m2, stddev)
+                new_n = target_n + state.n;
+                new_avg = (state.n * state.avg + target_n * target_avg) / new_n
+                delta = state.avg - target_avg
+                target_m2 = state.m2 + target_m2 + delta * delta * state.n * target_n / new_n
+                target_avg = new_avg
+                target_n = new_n
+            target_stddev = math.sqrt(target_m2 / (target_n - 1)) if target_n > 1 else 0
+            result_state = StandardDeviationState(first_state.id, target_n, target_avg, target_m2, target_stddev)
         elif isinstance(first_state,SumState):
             sum_value: float = 0
             for state in states:

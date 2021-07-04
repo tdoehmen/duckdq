@@ -51,8 +51,9 @@ class SQLEngine(Engine):
                      "DECIMAL"}
     STRING_TYPES = {"VARCHAR", "NVARCHAR", "CLOB", "TEXT"}
 
-    def __init__(self):
+    def __init__(self, no_sharing=False):
         super().__init__()
+        self.no_sharing = no_sharing
         self.schema = self.get_schema()
 
     def evaluate_preconditions(self, preconditions: Sequence[Precondition]):
@@ -112,17 +113,27 @@ class SQLEngine(Engine):
         for grouping, grouping_operators in grouping_operator_groups.items():
             aggregations.add(grouping.get_num_rows_aggregation())
 
-        for operator in scanning_operators:
-            aggregations = aggregations.union(operator.get_aggregations())
+        if self.no_sharing:
+            for operator in scanning_operators:
+                aggregations = operator.get_aggregations()
+                if len(aggregations) > 0:
+                    scanning_result = self.execute_and_fetch(f"SELECT {', '.join(aggregations)} FROM {self.table}")
+                    state = operator.extract_state(scanning_result)
+                    state = repo.register_state(state)
+                    metric = operator.get_metric(state)
+                    metrics[operator.get_property()] = metric
+        else:
+            for operator in scanning_operators:
+                aggregations = aggregations.union(operator.get_aggregations())
 
-        if len(aggregations) > 0:
-            scanning_result = self.execute_and_fetch(f"SELECT {', '.join(aggregations)} FROM {self.table}")
+            if len(aggregations) > 0:
+                scanning_result = self.execute_and_fetch(f"SELECT {', '.join(aggregations)} FROM {self.table}")
 
-        for operator in scanning_operators:
-            state = operator.extract_state(scanning_result)
-            state = repo.register_state(state)
-            metric = operator.get_metric(state)
-            metrics[operator.get_property()] = metric
+            for operator in scanning_operators:
+                state = operator.extract_state(scanning_result)
+                state = repo.register_state(state)
+                metric = operator.get_metric(state)
+                metrics[operator.get_property()] = metric
 
         for grouping, grouping_operators in grouping_operator_groups.items():
             grouping_columns = list(grouping.grouping_cols)
@@ -174,10 +185,10 @@ class SQLEngine(Engine):
 
 
 class DuckDBEngine(SQLEngine):
-    def __init__(self, con: DuckDBPyConnection, table):
+    def __init__(self, con: DuckDBPyConnection, table, no_sharing = False):
         self.con = con
         self.table = table
-        super().__init__()
+        super().__init__(no_sharing)
 
     def profile(self, with_quantiles=True):
         table_info = self.con.execute(f"PRAGMA table_info({self.table})").fetchdf()
