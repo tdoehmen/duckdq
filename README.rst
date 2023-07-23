@@ -33,7 +33,7 @@ Citation
 ===========
 .. code-block::
 
-   @article{Lisa_My_awesome_research_2021,
+   @article{duckdq2021,
      author = {Doehmen, Till and Raasveldt, Mark and Muehleisen, Hannes and Schelter, Sebastian},
      journal={Challenges in Deploying and monitoring Machine Learning Systems Workshop, ICML 2021},
      title = {{DuckDQ: Data Quality Assertions for Machine Learning Pipelines}},
