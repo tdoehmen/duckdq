@@ -28,14 +28,26 @@ Installation
    git clone https://github.com/tdoehmen/duckdq 
    cd duckdq 
    python setup.py install 
-   
+
+Citation
+===========
+.. code-block::
+
+   @article{Lisa_My_awesome_research_2021,
+     author = {Doehmen, Till and Raasveldt, Mark and Muehleisen, Hannes and Schelter, Sebastian},
+     journal={Challenges in Deploying and monitoring Machine Learning Systems Workshop, ICML 2021},
+     title = {{DuckDQ: Data Quality Assertions for Machine Learning Pipelines}},
+     year = {2021}
+   }
+
+`PDF <https://ssc.io/pdf/duckdq.pdf>`_
 
 Acknowledgements
 ==================
 
-Deequ https://github.com/awslabs/deequ
+`Deequ <https://github.com/awslabs/deequ>`_ 
 
-DuckDB https://github.com/cwida/duckdb
+`DuckDB <https://github.com/cwida/duckdb>`_ 
 
-We adopted parts of the user-facing API and unit-tests from the hooqu project https://github.com/mfcabrera/hooqu under Apache License 2.0
+We adopted parts of the user-facing API and unit-tests from the `hooqu <https://github.com/mfcabrera/hooqu>`_ project under Apache License 2.0
 
